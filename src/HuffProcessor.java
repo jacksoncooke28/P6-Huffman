@@ -64,18 +64,27 @@ public class HuffProcessor {
 	 */
 	public void compress(BitInputStream in, BitOutputStream out){
 
-		//determine frequency of every character
 		int[] counts = new int[ALPH_SIZE];
-		HuffNode root = makeTree(counts);
-		String[] encodings = new String[ALPH_SIZE+1];
-		makeEncodings(encodings, root, "");
-
 		while (true){
 			int index = in.readBits(BITS_PER_WORD);
 			if (index == -1) break;
 			counts[index]++;
 		}
+		HuffNode root = makeTree(counts);
+		String[] encodings = new String[ALPH_SIZE+1];
+		makeEncodings(encodings, root, "");
+		writeTree(root, out);
+		in.reset();
+		
+		while(true){
+			int currByte = in.readBits(BITS_PER_WORD);
 
+			if (currByte == -1) break;
+			String code = encodings[currByte];
+			out.writeBits(code.length(), Integer.parseInt(code, 2));
+		}
+		String endCode = encodings[PSEUDO_EOF];
+		out.writeBits(endCode.length(), Integer.parseInt(endCode, 2));
 		out.close();
 	}
 	private HuffNode makeTree(int[] counts){
