@@ -66,6 +66,10 @@ public class HuffProcessor {
 
 		//determine frequency of every character
 		int[] counts = new int[ALPH_SIZE];
+		HuffNode root = makeTree(counts);
+		String[] encodings = new String[ALPH_SIZE+1];
+		makeEncodings(encodings, root, "");
+
 		while (true){
 			int index = in.readBits(BITS_PER_WORD);
 			if (index == -1) break;
@@ -86,7 +90,7 @@ public class HuffProcessor {
 		while (pq.size() > 1){
 			HuffNode left = pq.remove();
 			HuffNode right = pq.remove();
-			HuffNode t = new HuffNode(0, counts[left.value] + counts[right.value], left, right);
+			HuffNode t = new HuffNode(0, left.weight + right.weight, left, right);
 			pq.add(t);
 		}
 
@@ -94,7 +98,32 @@ public class HuffProcessor {
 		return root;
 	
 	}
+
+	private void makeEncodings(String[] encodings, HuffNode root, String path){
+		if (root == null){
+			return;
+		}
+		if (root.left == null && root.right == null){
+			encodings[root.value] = path;
+			return;
+		}
+		makeEncodings(encodings, root.left, path + "0");
+		makeEncodings(encodings, root.right, path + "1");
+	}
 	
+	private void writeTree(HuffNode root, BitOutputStream out){
+		if (root == null) return;
+		if (root.left == null && root.right == null){
+			out.writeBits(1, 1);
+			out.writeBits(BITS_PER_WORD + 1, root.value);
+		}
+		else{
+			out.writeBits(1, 0);
+			writeTree(root.left, out);
+			writeTree(root.right, out);
+		}
+		
+	}
 
 	/**
 	 * Decompresses a file. Output file must be identical bit-by-bit to the
