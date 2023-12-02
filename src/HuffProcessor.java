@@ -73,6 +73,7 @@ public class HuffProcessor {
 		HuffNode root = makeTree(counts);
 		String[] encodings = new String[ALPH_SIZE+1];
 		makeEncodings(encodings, root, "");
+		out.writeBits(BITS_PER_INT, HUFF_TREE);
 		writeTree(root, out);
 		in.reset();
 		
