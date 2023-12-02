@@ -83,15 +83,40 @@ public class HuffProcessor {
 	 * @param out
 	 *            Buffered bit stream writing to the output file.
 	 */
+	private HuffNode readTree(BitInputStream in) {
+        int bit = in.readBits(1);
+        if (bit == -1) throw new HuffException("No more bits to read");
+        if (bit == 0) {
+                left = readTree(in);
+                right = readTree(in);
+                return new HuffNode(0,0,left,right);
+        }
+        else {
+            //value = read BITS_PER_WORD+1 bits from input
+            return new HuffNode(value,0,null,null);
+        }
+ 	 }
 	public void decompress(BitInputStream in, BitOutputStream out){
 
-		// remove all code when implementing decompress
-
+		int bits = in.readBits(BITS_PER_INT);
+		if (bits != HUFF_TREE){
+			throw new HuffException("Invalid magic number" + bits);
+		}
+		HuffNode root = readTree(in);
+		HuffNode current = root;
+		while(true){
+			//write code
+		}
+		out.close();
+		/* 
 		while (true){
 			int val = in.readBits(BITS_PER_WORD);
 			if (val == -1) break;
 			out.writeBits(BITS_PER_WORD, val);
 		}
 		out.close();
+		*/
 	}
+	
+
 }
