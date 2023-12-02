@@ -109,12 +109,13 @@ public class BitOutputStream extends OutputStream {
 			flush();
 			output.close();
 			source.close();
-		}
+		} 
 		catch (IOException io) {
 			throw new RuntimeException(io);
 		}
-		
 	}
+		
+	
 	
 	/**
 	 * Writes specified value with least-significant BYTE_SIZE bits

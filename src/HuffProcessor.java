@@ -144,19 +144,7 @@ public class HuffProcessor {
 	 * @param out
 	 *            Buffered bit stream writing to the output file.
 	 */
-	private HuffNode readTree(BitInputStream in) {
-        int bit = in.readBits(1);
-        if (bit == -1) throw new HuffException("No more bits to read");
-        if (bit == 0) {
-                HuffNode left = readTree(in);
-                HuffNode right = readTree(in);
-                return new HuffNode(0,0,left,right);
-        }
-        else {
-            int value = in.readBits(BITS_PER_WORD+1);
-            return new HuffNode(value,0,null,null);
-        }
- 	 }
+	
 	public void decompress(BitInputStream in, BitOutputStream out){
 
 		int bits = in.readBits(BITS_PER_INT);
@@ -187,6 +175,19 @@ public class HuffProcessor {
 			
 			out.close();}
 		}
+		private HuffNode readTree(BitInputStream in) {
+        int bit = in.readBits(1);
+        if (bit == -1) throw new HuffException("No more bits to read");
+        if (bit == 0) {
+                HuffNode left = readTree(in);
+                HuffNode right = readTree(in);
+                return new HuffNode(0,0,left,right);
+        }
+        else {
+            int value = in.readBits(BITS_PER_WORD+1);
+            return new HuffNode(value,0,null,null);
+        }
+ 	 }
 		
 		
 	}
