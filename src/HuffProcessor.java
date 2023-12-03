@@ -173,8 +173,10 @@ public class HuffProcessor {
 					}
 				}
 			
-			out.close();}
+			}
+			out.close();
 		}
+		
 		private HuffNode readTree(BitInputStream in) {
         int bit = in.readBits(1);
         if (bit == -1) throw new HuffException("No more bits to read");
